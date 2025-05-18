@@ -19,4 +19,4 @@ COPY --from=builder /app/target/*.jar ./app.jar
 EXPOSE 8080
 # Set the command to run the application
 #equivalent to java -jar app.jar in the terminal
-CMD["java","-jar","app.jar"] 
+CMD["java", "-jar", "app.jar"] 
