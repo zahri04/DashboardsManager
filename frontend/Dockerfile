@@ -1,31 +1,36 @@
-# building Stage
-FROM  node:22.2-alpine3.17 As builder
+# 1) Build Stage
+FROM node:22.2-alpine3.17 AS builder
 WORKDIR /app
-COPY package.json package-lock.json ./
 
+# 1.1) Install dependencies first for better caching
+COPY package.json package-lock.json ./
 RUN npm ci
 
+# 1.2) Copy rest of the source
 COPY . .
 
-# Receing Args , URl, PORT of BACKEND withing the outer .env
+# 1.3) Inject your backend URL at build time
 ARG REACT_APP_API_URL
-RUN printf"\nREACT_APP_API_URL=%s\n" "$REACT_APP_API_URL" > .env.production
+RUN printf "\nREACT_APP_API_URL=%s\n" "$REACT_APP_API_URL" > .env.production
 
-
-# build tailwind css
+# 1.4) Build Tailwind CSS assets (if you have a separate script)
 RUN npm run build:tailwind
-#build the app with gulp licences (view package.json:Scripts)
-#build moved to WORKDIR : /app/build
+
+# 1.5) Final production build
 RUN npm run build
 
 
-# Production Image
+# 2) Production Image
 FROM nginx:alpine
 
-# deleting existing default nginx static files
+# 2.1) Clear default NGINX content
 RUN rm -rf /usr/share/nginx/html/*
-# copying the build files from the builder stage
+
+# 2.2) Copy in your built app
 COPY --from=builder /app/build /usr/share/nginx/html/
 
-EXPOSE 3000
+# 2.3) Expose the port NGINX will listen on (default 80)
+EXPOSE 80
+
+# 2.4) Launch NGINX in the foreground
 CMD ["nginx", "-g", "daemon off;"]
