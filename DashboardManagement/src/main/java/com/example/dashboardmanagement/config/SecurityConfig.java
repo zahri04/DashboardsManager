@@ -38,6 +38,9 @@ public class SecurityConfig  {
     @Autowired
     JwtFilter jwtFilter;
 
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:80}")
+    private String allowedOrigins;
+
 
     @Bean
 
@@ -65,7 +68,7 @@ public class SecurityConfig  {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
