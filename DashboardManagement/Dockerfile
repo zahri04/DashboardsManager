@@ -1,6 +1,6 @@
 # Stage 1: Build the application
 #the image is contained with maven for building the jar file
-FROM maven:3.8.6-eclipse-temurin-21 AS builder
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 COPY src ./src
 COPY pom.xml .
