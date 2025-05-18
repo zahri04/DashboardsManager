@@ -1,5 +1,5 @@
 # 1) Build Stage
-FROM node:22.2-alpine3.17 AS builder
+FROM node:22-alpine3.21 AS builder
 WORKDIR /app
 
 # 1.1) Install dependencies first for better caching
