@@ -6,11 +6,17 @@ services:
     restart: unless-stopped
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -27,8 +33,9 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
-      SPRING_DATASOURCE_USER: ${MYSQL_USER}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      FRONTEND_CORS_ORIGIN: ${FRONTEND_CORS_ORIGIN}
     networks:
       - backend
 
@@ -41,7 +48,7 @@ services:
     depends_on:
       - app
     ports:
-      - "3000:3000"
+      - "80:80"
     networks:
       - backend
       - frontend
