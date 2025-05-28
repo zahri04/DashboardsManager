@@ -4,16 +4,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken]           = useState(localStorage.getItem("token") || null);
   const [isLoggedIn, setIsLoggedIn] = useState(!!token);
-  const [user, setUser] = useState({
-    username: "",
-    authorities: [],
-  });
+  const [user, setUser]             = useState({ username: "", authorities: [] });
 
-  const Login = (token) => {
-    setToken(token);
-    localStorage.setItem("token", token);
+  const Login = (newToken) => {
+    setToken(newToken);
+    localStorage.setItem("token", newToken);
     setIsLoggedIn(true);
   };
 
@@ -21,29 +18,36 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    setUser({
-      username: "",
-      authorities: [],
-    });
+    setUser({ username: "", authorities: [] });
   };
 
   useEffect(() => {
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setUser({
-          username: decodedToken.sub,
-          authorities: decodedToken.authorities || [],
-        });
-      } catch (err) {
-        console.error("Invalid token:", err);
-        Logout(); // Clean up invalid token
+    if (!token) {
+      setUser({ username: "", authorities: [] });
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      const nowSec  = Date.now() / 1000;
+
+      // if token is expired, force logout
+      if (decoded.exp && decoded.exp < nowSec) {
+        console.warn("Token expired at", decoded.exp, "– logging out.");
+        Logout();
+        return;
       }
-    } else {
+
+      console.log("Decoded token:", decoded);
+      // otherwise set user info
       setUser({
-        username: "",
-        authorities: [],
+        username:    decoded.sub,
+        authorities: decoded.authorities || [],
       });
+
+    } catch (err) {
+      console.error("Invalid token:", err);
+      Logout();
     }
   }, [token]);
 

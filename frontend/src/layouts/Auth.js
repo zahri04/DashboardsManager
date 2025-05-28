@@ -1,13 +1,7 @@
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
-
-// components
-
-import Navbar from "components/Navbars/AuthNavbar.js";
-import FooterSmall from "components/Footers/FooterSmall.js";
+import { Switch, Route } from "react-router-dom";
 
 // views
-
 import Login from "views/auth/Login.js";
 import Register from "views/auth/Register.js";
 

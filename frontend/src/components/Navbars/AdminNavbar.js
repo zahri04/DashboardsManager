@@ -1,41 +1,37 @@
 import React from "react";
-
+import { HiMenu } from "react-icons/hi";
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
 
-export default function Navbar() {
+export default function AdminNavbar({ collapsed, toggleCollapse }) {
   return (
-    <>
-      {/* Navbar */}
-      <nav className="absolute top-0 left-0 w-full z-10 bg-transparent md:flex-row md:flex-nowrap md:justify-start flex items-center p-4">
-        <div className="w-full mx-autp items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-4">
-          {/* Brand */}
-          <a
-            className="text-white text-sm uppercase hidden lg:inline-block font-semibold"
-            href="#pablo"
-            onClick={(e) => e.preventDefault()}
-          >
-            Dashboard
-          </a>
-          {/* Form */}
-          <form className="md:flex hidden flex-row flex-wrap items-center lg:ml-auto mr-3">
-            <div className="relative flex w-full flex-wrap items-stretch">
-              <span className="z-10 h-full leading-snug font-normal absolute text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
-                <i className="fas fa-search"></i>
-              </span>
-              <input
-                type="text"
-                placeholder="Search here..."
-                className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
-              />
-            </div>
-          </form>
-          {/* User */}
-          <ul className="flex-col md:flex-row list-none items-center hidden md:flex">
-            <UserDropdown />
-          </ul>
-        </div>
-      </nav>
-      {/* End Navbar */}
-    </>
+    <nav
+      className={`
+        fixed top-0
+        ${collapsed ? "left-0" : "left-64"} right-0
+        z-30 bg-white/70 backdrop-blur-sm shadow-sm border-b border-gray-200
+        px-6 py-3 flex items-center justify-between transition-all duration-300
+      `}
+    >
+      {/* Left: toggle button + brand */}
+      <div className="flex items-center space-x-4">
+        {/* Toggle */}
+        <button
+          onClick={toggleCollapse}
+          className="relative z-40 p-2 rounded-md hover:bg-gray-200 transition"
+        >
+          <HiMenu className="h-6 w-6 text-gray-700" />
+        </button>
+
+        {/* Brand */}
+        <span className="text-xl font-semibold text-blue-700 tracking-wide">
+          Admin Dashboard
+        </span>
+      </div>
+
+      {/* Right: user menu */}
+      <div className="flex items-center">
+        <UserDropdown />
+      </div>
+    </nav>
   );
 }

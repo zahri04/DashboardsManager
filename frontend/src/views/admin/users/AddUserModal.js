@@ -15,7 +15,7 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
   const fetchGroups = async () => {
     try {
       const response = await AxiosInstance.get("groups");
-      setGroups(response.data.map(group => group.name)); // Assuming each group has a 'name' property
+      setGroups(response.data.content.map(group => group.name)); // Assuming each group has a 'name' property
     console.log("Groups fetched:", response.data); // Debugging line
     } catch (error) {
       console.error("Error fetching groups:", error);
