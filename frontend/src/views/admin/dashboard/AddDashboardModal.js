@@ -4,14 +4,12 @@ import { useAuth } from "context/AuthContext";
 
 export default function AddModal({ isOpen, onClose, onAdd }) {
   const {user}= useAuth();
-  
-  const [created_by] = useState(user.username || null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     base_url: "",
     secret_key: "",
-    created_by_username: created_by,
+    resourceValue:""
   });
 
  if (!user) {
@@ -31,7 +29,7 @@ export default function AddModal({ isOpen, onClose, onAdd }) {
       description: "",
       base_url: "",
      secret_key: "",
-     created_by_username:""
+     resourceValue:""
     });
   };
 
@@ -68,11 +66,10 @@ export default function AddModal({ isOpen, onClose, onAdd }) {
           onChange={handleChange}
           />
           <input
-          hidden
-          name="created_by_username"
-          placeholder="created_by"
+          name="resourceValue"
+          placeholder="Resource Value(Metabase Dashboard ID)"
           className="border p-2 w-full"
-          value={created_by}
+          value={formData.resourceValue}
           onChange={handleChange}
           />
         <button

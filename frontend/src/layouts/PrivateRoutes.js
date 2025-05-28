@@ -1,64 +1,69 @@
+// src/components/PrivateRoutes.js
+import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { Switch, Route, Redirect } from "react-router-dom";
 
-// components
-import AdminNavbar from "components/Navbars/AdminNavbar.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
-import HeaderStats from "components/Headers/HeaderStats.js";
-import FooterAdmin from "components/Footers/FooterAdmin.js";
+// layouts & views
+import AdminLayout from "./AdminLayout";
+import Dashboard       from "views/admin/Dashboard.js";
+import Profile         from "../views/admin/profile/Profile";
+import Users           from "../views/admin/users/Users.js";
+import Groups          from "../views/admin/groups/Groups";
+import DashboardsList  from "../views/admin/dashboard/DashboardsList.js";
+import DashboardView   from "views/admin/dashboardView/DashboardView";
+import DashboardViewList from "views/admin/dashboardView/DashboardViewList";
+import DashboardAccess   from "views/admin/dashboardAccess/DashboardAccess";
 
-// views
-import Dashboard from "views/admin/Dashboard.js";
-import Maps from "views/admin/Maps.js";
-import Profile from "../views/admin/profile/Profile";
-import Tables from "views/admin/Tables.js";
-import Users from "../views/admin/users/Users.js";
-import Groups from "../views/admin/groups/Groups";
-import DashboardsList from "../views/admin/dashboard/DashboardsList.js";
+const PrivateRoutes = ({ path }) => {
+  const { token, user, loading } = useAuth();
 
-const PrivateRoutes = ({ path }) => {   
-    const { token, user, loading } = useAuth();
-    if(!user) {
-      return null;}
+  if (loading) return <div>Loading...</div>;
+  if (!token || !user) return <Redirect to="/login" />;
+
+  // permission check helper
+  const hasAccess = (perms = [], require = "any") => {
+    if (perms.length === 0) return true;
+    return require === "all"
+      ? perms.every(p => user.authorities.includes(p))
+      : perms.some(p => user.authorities.includes(p));
+  };
+
+  // route definitions
+  const routes = [
+    // public to any logged-in user
+    { to: `${path}/profile`,        exact: true, component: Profile,           perms: [],                     require: "any" },
+    { to: `${path}/dashboard`,      exact: true, component: Dashboard,         perms: [],                     require: "any" },
 
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    // admin-only or permissioned routes
+    { to: `${path}/dashboardView`,  exact: true, component: DashboardViewList, perms: ["PERM_DASHBOARDS_VIEW","PERM_USER_MANAGEMENT"], require: "any" },
+    { to: `${path}/dashboardView/:id`, exact: true, component: DashboardView,    perms: ["PERM_DASHBOARDS_VIEW","PERM_USER_MANAGEMENT"],require: "any" },
+    { to: `${path}/users`,          exact: true, component: Users,             perms: ["PERM_USER_MANAGEMENT"], require: "any" },
+    { to: `${path}/groups`,         exact: true, component: Groups,            perms: ["PERM_GROUP_MANAGEMENT","PERM_DASHBOARD_MANAGEMENT"], require: "any" },
+    { to: `${path}/dashboardsList`, exact: true, component: DashboardsList,     perms: ["PERM_DASHBOARD_MANAGEMENT","PERM_GROUP_MANAGEMENT"], require: "any" },
+    {
+      to: `${path}/dashboardAccess`,
+      exact: true,
+      component: DashboardAccess,
+      perms: ["PERM_GROUP_MANAGEMENT", "PERM_DASHBOARD_MANAGEMENT"],
+      require: "any"
+    },
+  ];
 
-    if (!token || !user) { 
-        return <Redirect to="/login" />; 
-    }
+  return (
+    <AdminLayout>
+      <Switch>
+        {routes.map(({ to, exact, component: C, perms, require }, idx) => {
+          // skip if user lacks access
+          if (!hasAccess(perms, require)) return null;
+          return <Route key={idx} path={to} exact={exact} component={C} />;
+        })}
 
-    return (
-        <>
-          <Sidebar />
-          <div className="relative md:ml-64 bg-blueGray-100">
-            <AdminNavbar />
-            <HeaderStats />
-            <div className="px-4 md:px-10 mx-auto w-full -m-24">
-              <Switch>
-                <Route path={`${path}/dashboard`} exact component={Dashboard} />
-                <Route path={`${path}/maps`} exact component={Maps} />
-                <Route path={`${path}/profile`} exact component={Profile} />
-                <Route path={`${path}/tables`} exact component={Tables} />
-
-                {user.authorities.includes("PERM_USER_MANAGEMENT") &&(
-                  <Route path="/admin/users" exact component={Users} />)}
-                 {user.authorities.includes("PERM_GROUP_MANAGEMENT") &&(
-                <Route path="/admin/groups" exact component={Groups} />)}
-                {user.authorities.includes("PERM_DASHBOARD_MANAGEMENT") &&(
-                <Route path="/admin/dashboardsList" exact component={DashboardsList} />)}
-               
-                {/* <Route path="/admin/dashboardsList/view" exact component={ViewDashboard} /> */}
-
-                <Redirect from={path} to={`${path}/dashboard`} />
-              </Switch>
-              <FooterAdmin />
-            </div>
-          </div>
-        </>
-    );
+        {/* fallback to dashboard */}
+        <Redirect from={path} to={`${path}/dashboard`} />
+      </Switch>
+    </AdminLayout>
+  );
 };
 
 export default PrivateRoutes;

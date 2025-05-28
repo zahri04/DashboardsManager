@@ -8,6 +8,7 @@ export default function EditDashboardModal({ isOpen, onClose, onSave, dashboard 
     description: "",
     base_url: "",
     secret_key: "",
+    resourceValue: ""
   });
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function EditDashboardModal({ isOpen, onClose, onSave, dashboard 
         description: dashboard.description || "",
         base_url: dashboard.base_url || "",
         secret_key: dashboard.secret_key || "",
+        resourceValue: dashboard.resourceValue || "",
       });
     }
   }, [dashboard]);
@@ -60,6 +62,13 @@ export default function EditDashboardModal({ isOpen, onClose, onSave, dashboard 
           placeholder="Secret Key"
           className="border p-2 w-full"
           value={formData.secret_key}
+          onChange={handleChange}
+        />
+         <input
+          name="resourceValue"
+          placeholder="Resource Value"
+          className="border p-2 w-full"
+          value={formData.resourceValue}
           onChange={handleChange}
         />
         <button
