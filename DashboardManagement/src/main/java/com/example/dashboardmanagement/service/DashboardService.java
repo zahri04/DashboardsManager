@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.web.webauthn.api.Bytes;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -50,6 +51,7 @@ public class DashboardService {
         dto.setDescription(dashboard.getDescription());
         dto.setBase_url(dashboard.getBase_url());
         dto.setSecret_key(dashboard.getSecret_key());
+        dto.setResourceValue(dashboard.getResourceValue());
         dto.setCreated_at(dashboard.getCreatedAt());
         dto.setUpdated_at(dashboard.getUpdatedAt());
 
@@ -74,6 +76,7 @@ public class DashboardService {
         dashboard.setDescription(dto.getDescription());
         dashboard.setBase_url(dto.getBase_url());
         dashboard.setSecret_key(dto.getSecret_key());
+        dashboard.setResourceValue(dto.getResourceValue());
 
 
         // in case if no user sent next to the dashboard while updating or creating
@@ -105,6 +108,18 @@ public class DashboardService {
 
         }
 
+        // veryfiying that secret_key is 32 Bytes or plus
+
+        byte[] secret_key_bytes=dto.getSecret_key().getBytes();
+
+        if(secret_key_bytes==null){
+            throw new IllegalArgumentException("secret_key cannot be null");
+        }
+        if(secret_key_bytes.length< 32){
+            throw new IllegalArgumentException("secret_key length is Short (Less than 32)");
+
+        }
+
         Dashboard dashboard = convertToEntity(dto);
         Dashboard saved = dashboardRepo.save(dashboard);
         return convertToDto(saved);
@@ -131,6 +146,7 @@ public class DashboardService {
             String description,
             String base_url,
             String secretKey,
+            Long resourceValue,
             LocalDateTime createdAfter,
             LocalDateTime createdBefore,
             LocalDateTime updatedAfter,
@@ -143,7 +159,7 @@ public class DashboardService {
 
         Pageable pageable= PaginationUtils.createPageRequest(pageNumber,pageSize,sort);
 
-        Page<Dashboard> dashboards= dashboardRepo.searchDashboards(name,description,base_url,secretKey,createdAfter,createdBefore,updatedAfter,updatedBefore,pageable);
+        Page<Dashboard> dashboards= dashboardRepo.searchDashboards(name,description,base_url,secretKey,resourceValue,createdAfter,createdBefore,updatedAfter,updatedBefore,pageable);
         return dashboards.map(this::convertToDto);
 
     };
@@ -171,6 +187,9 @@ public class DashboardService {
         }
         if(dto.getSecret_key()!=null){
             dashboard.setSecret_key(dto.getSecret_key());
+        }
+        if(dto.getResourceValue()!=null){
+            dashboard.setResourceValue(dto.getResourceValue());
         }
 
 

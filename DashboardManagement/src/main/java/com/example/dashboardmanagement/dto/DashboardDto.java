@@ -20,6 +20,10 @@ public class DashboardDto {
     private String base_url;
     @NotNull(message = "the secret key is Missing")
     private String secret_key;
+//    @NotNull(message="the Resource Name iS Required")
+//    private String resourceKey;
+    @NotNull(message = "the resource value is required")
+    private Long resourceValue;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime created_at;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")

@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DashboardAccessDto {
-    private Long dashboard_id;
-    private Long group_id;
-
+    private Long dashboardId;
+    private Long groupId;
+    private String groupName;
+    private String dashboardName;
     private boolean canView;
     private boolean canEdit;
 }

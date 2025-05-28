@@ -1,14 +1,19 @@
 package com.example.dashboardmanagement.controller;
 
+import com.example.dashboardmanagement.dto.BatchAccessDto;
 import com.example.dashboardmanagement.dto.DashboardAccessDto;
 import com.example.dashboardmanagement.service.DashboardAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dashboard-access")
+@RequestMapping("/api/dashboardAccess")
+@PreAuthorize("hasAnyAuthority('PERM_GROUP_MANAGEMENT','PERM_DASHBOARD_MANAGEMENT','PERM_DASHBOARDS_VIEW')")
 public class DashboardAccessController {
 
     private final DashboardAccessService dashboardAccessService;
@@ -30,6 +35,13 @@ public class DashboardAccessController {
             @PathVariable Long groupId,
             @PathVariable Long dashboardId) {
         return dashboardAccessService.getDashboardAccessById(groupId, dashboardId);
+    }
+
+    @PostMapping("/batch")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> assignBatch(@RequestBody BatchAccessDto batch) {
+        dashboardAccessService.assignBatch(batch);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // Update DashboardAccess

@@ -99,7 +99,7 @@ public class UserService {
 
 
     // searching for users with filters(sort's)
-    public Page<UserDto> searchUsers(
+    public Page<UserDto> getUsers(
             String username,
             String fullName,
             Boolean enabled,

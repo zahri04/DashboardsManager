@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@PreAuthorize("hasAuthority('PERM_DASHBOARD_MANAGEMENT')")
+@PreAuthorize("hasAnyAuthority('PERM_GROUP_MANAGEMENT','PERM_DASHBOARD_MANAGEMENT')")
 @RequestMapping("api/dashboard")
 public class DashboardController {
 
@@ -26,7 +26,7 @@ public class DashboardController {
 
 
     @ResponseStatus(value=HttpStatus.OK)
-    @GetMapping
+    @GetMapping("all")
     public ResponseEntity< List<DashboardDto>>  getAllDashboards(){
         List<DashboardDto> dtos= dashboardService.getAllDashboards();
         System.out.println(dtos);
@@ -45,13 +45,14 @@ public class DashboardController {
 
     }
 
-    @GetMapping("search")
+    @GetMapping()
 
     public Page<DashboardDto> searchDashboards(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String base_url,
             @RequestParam(required=false)  String secret_key,
+            @RequestParam(required = false)  Long resourceValue,
             @RequestParam(required = false) LocalDateTime createdAfter,
             @RequestParam(required = false) LocalDateTime createdBefore,
             @RequestParam(required = false) LocalDateTime updatedAfter,
@@ -64,7 +65,7 @@ public class DashboardController {
 
     ){
 
-        Page<DashboardDto> dashboards= dashboardService.searchDashboards(name,description,base_url,secret_key,createdAfter,createdBefore,updatedAfter,updatedBefore,pageNumber,pageSize,
+        Page<DashboardDto> dashboards= dashboardService.searchDashboards(name,description,base_url,secret_key,resourceValue,createdAfter,createdBefore,updatedAfter,updatedBefore,pageNumber,pageSize,
                 sort ==null ? List.of("name,asc"):sort
 
         );

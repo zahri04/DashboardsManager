@@ -51,7 +51,7 @@ public class Group {
     private Set<Authority> authorities;
 
     @OneToMany(mappedBy = "group",cascade=CascadeType.ALL,orphanRemoval = true)
-    private Set<DashboardAccess> dashboardAccesses ;
+    private Set<DashboardAccess> dashboardAccesses=new HashSet<>() ;
 
 
 

@@ -1,4 +1,5 @@
 package com.example.dashboardmanagement.service;
+import com.example.dashboardmanagement.dto.BatchAccessDto;
 import com.example.dashboardmanagement.dto.DashboardAccessDto;
 import com.example.dashboardmanagement.exception.DashboardAccessAlreadyExistException;
 import com.example.dashboardmanagement.exception.DashboardAccessNotFoundException;
@@ -16,7 +17,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,8 +53,10 @@ public class DashboardAccessService {
     // Convert Entity to DTO
     public DashboardAccessDto convertToDto(DashboardAccess dashboardAccess) {
         DashboardAccessDto dto= new DashboardAccessDto();
-        dto.setDashboard_id(dashboardAccess.getDashboard().getId());
-        dto.setGroup_id(dashboardAccess.getGroup().getId());
+        dto.setGroupName(dashboardAccess.getGroup().getName());
+        dto.setDashboardName(dashboardAccess.getDashboard().getName());
+        dto.setDashboardId(dashboardAccess.getDashboard().getId());
+        dto.setGroupId(dashboardAccess.getGroup().getId());
         dto.setCanView(dashboardAccess.isCanView());
         dto.setCanEdit(dashboardAccess.isCanEdit());
 
@@ -61,8 +66,8 @@ public class DashboardAccessService {
     // Convert DTO into Entity
     public DashboardAccess convertToEntity(DashboardAccessDto dashboardAccessDto) {
         DashboardAccess dashboardAccess = new DashboardAccess();
-        Long groupId = dashboardAccessDto.getGroup_id();
-        Long dashboardId = dashboardAccessDto.getDashboard_id();
+        Long groupId = dashboardAccessDto.getGroupId();
+        Long dashboardId = dashboardAccessDto.getDashboardId();
 
         // Generating the Composite Key
         DashboardAccessId dashboardAccessId = new DashboardAccessId(groupId, dashboardId);
@@ -87,11 +92,11 @@ public class DashboardAccessService {
 
         // checking if DashboardAccessDto doesn't Exist
 
-        DashboardAccessId dashboardAccessId = new DashboardAccessId(dto.getGroup_id(), dto.getDashboard_id());
+        DashboardAccessId dashboardAccessId = new DashboardAccessId(dto.getGroupId(), dto.getDashboardId());
 
 
         if(dashboardAccessRepo.existsById(dashboardAccessId)) {
-            throw new DashboardAccessAlreadyExistException(dto.getGroup_id(), dto.getDashboard_id());
+            throw new DashboardAccessAlreadyExistException(dto.getGroupId(), dto.getDashboardId());
 
         }
 
@@ -99,12 +104,12 @@ public class DashboardAccessService {
         // getting Dashboard Object
 
         Dashboard dashboard= dashboardRepo
-                .findById(dto.getDashboard_id())
-                .orElseThrow(() -> new DashboardNotFoundException(dto.getDashboard_id()));
+                .findById(dto.getDashboardId())
+                .orElseThrow(() -> new DashboardNotFoundException(dto.getDashboardId()));
 
         Group group = groupRepo
-                .findById(dto.getGroup_id())
-                .orElseThrow(() -> new GroupNotFoundException(dto.getGroup_id()));
+                .findById(dto.getGroupId())
+                .orElseThrow(() -> new GroupNotFoundException(dto.getGroupId()));
 
         // Creating New DashboardAccess Object
 
@@ -170,9 +175,9 @@ public class DashboardAccessService {
     // update dashboard access
 
     public DashboardAccessDto updateDashboardAccess(DashboardAccessDto dto) {
-        DashboardAccessId id = new DashboardAccessId(dto.getGroup_id(), dto.getDashboard_id());
+        DashboardAccessId id = new DashboardAccessId(dto.getGroupId(), dto.getDashboardId());
         DashboardAccess existing = dashboardAccessRepo.findById(id)
-                .orElseThrow(() -> new DashboardAccessNotFoundException(dto.getGroup_id(), dto.getDashboard_id()));
+                .orElseThrow(() -> new DashboardAccessNotFoundException(dto.getGroupId(), dto.getDashboardId()));
         // update flags
         existing.setCanView(dto.isCanView());
         existing.setCanEdit(dto.isCanEdit());
@@ -196,6 +201,51 @@ public class DashboardAccessService {
 
 
 
+    }
+
+// in src/main/java/com/example/dashboardmanagement/service/DashboardAccessService.java
+
+    /**
+     * Assigns each dashboardId to each groupId with the given permissions.
+     * Skips any pair that already exists.
+     */
+    public void assignBatch(BatchAccessDto batch) {
+        List<Long> dashIds = batch.getDashboardIds();
+        List<Long> grpIds  = batch.getGroupIds();
+        boolean viewFlag   = batch.isCanView();
+        boolean editFlag   = batch.isCanEdit();
+
+        // Validate all referenced dashboards and groups exist up front:
+        dashIds.forEach(did ->
+                dashboardRepo.findById(did)
+                        .orElseThrow(() -> new DashboardNotFoundException(did))
+        );
+        grpIds.forEach(gid ->
+                groupRepo.findById(gid)
+                        .orElseThrow(() -> new GroupNotFoundException(gid))
+        );
+
+        // For each combination, create if not present
+        for (Long gid : grpIds) {
+            for (Long did : dashIds) {
+                DashboardAccessId id = new DashboardAccessId(gid, did);
+                if (dashboardAccessRepo.existsById(id)) {
+                    // skip existing
+                    continue;
+                }
+                Dashboard dashboard = dashboardRepo.getOne(did);
+                Group     group     = groupRepo.getOne(gid);
+
+                DashboardAccess ent = new DashboardAccess();
+                ent.setId(id);
+                ent.setDashboard(dashboard);
+                ent.setGroup(group);
+                ent.setCanView(viewFlag);
+                ent.setCanEdit(editFlag);
+
+                dashboardAccessRepo.save(ent);
+            }
+        }
     }
 
 }

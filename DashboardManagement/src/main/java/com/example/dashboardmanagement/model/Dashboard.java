@@ -24,10 +24,10 @@ public class Dashboard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    @Column(name="dashboard_id")
+    @Column(name = "dashboard_id")
     private long id;
 
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
@@ -36,9 +36,21 @@ public class Dashboard {
 
     private String base_url;
 
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
 
     private String secret_key;
+
+//    // the resource key is required for metabase token signature for example:
+//    // payload{
+////    dashboard:1
+////} dashboard represent the type of the
+//    @Column
+//    private String resourceKey;
+//    // the resource value
+
+    // resourceValue represents the id of the dashboard to render using metabase
+    @Column
+    private Long resourceValue;
 
     @CreationTimestamp
     @Column(name="created_at")
