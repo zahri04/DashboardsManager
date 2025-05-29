@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -45,11 +46,12 @@ public class GroupController {
     // Add a new group
 
     @PostMapping
-    public GroupDto addGroup(@Valid @RequestBody GroupDto groupDto, BindingResult result) {
+    public ResponseEntity<GroupDto> addGroup(@Valid @RequestBody GroupDto groupDto, BindingResult result) {
         if(result.hasErrors()) {
             throw new ValidationException(result.getAllErrors().get(0).getDefaultMessage());
         }
-        return groupService.addGroup(groupDto);
+        GroupDto group=groupService.addGroup(groupDto);
+        return ResponseEntity.ok(group);
     }
 
 
@@ -92,9 +94,10 @@ public class GroupController {
 
     // Update a group
     @PutMapping("/{id}")
-    public GroupDto updateGroup(@PathVariable Long id, @RequestBody GroupDto groupDto) {
+    public ResponseEntity<GroupDto> updateGroup(@PathVariable Long id, @RequestBody GroupDto groupDto) {
         groupDto.setId(id);
-        return groupService.updateGroup(groupDto);
+        GroupDto group= groupService.updateGroup(groupDto);
+        return ResponseEntity.ok(group);
     }
 
     // Delete a group
