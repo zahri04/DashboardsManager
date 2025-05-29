@@ -29,6 +29,9 @@ export default function GroupsList() {
   const [updatedAfter, setUpdatedAfter] = useState("");
   const [updatedBefore, setUpdatedBefore] = useState("");
 
+    // messages error and success
+    const [messageType, setMessageType] = useState("");
+    const [message,setMessage]=useState("")
   // helper → ISO
   const toISO = (v) => {
     const d = new Date(v);
@@ -78,18 +81,51 @@ useEffect(() => {
 ]);
   // actions
   const handleAdd = async (g) => {
-    await AxiosInstance.post("groups", g);
+    
+    try{
+         await AxiosInstance.post("groups", g);
+         setMessageType('success');
+         setMessage("Group added successfully!");
+         fetchData(); 
+        }catch(err){
+          setMessage(err.response.data);
+          setMessageType('error');
+          
+    
+        }
     setIsAddOpen(false);
-    fetchData();
   };
   const handleEdit = async (g) => {
-    await AxiosInstance.put(`groups/${g.id}`, g);
+     try{
+         await AxiosInstance.put(`groups/${g.id}`, g);
+         setMessageType('success');
+         setMessage("Group Updated successfully!");
+         fetchData(); 
+        }catch(err){
+          setMessage(err.response.data);
+          setMessageType('error');
+          
+    
+        }
     setIsEditOpen(false);
-    fetchData();
+    
   };
+
   const handleDelete = async (id) => {
-    await AxiosInstance.delete(`groups/${id}`);
-    fetchData();
+    if(!window.confirm("Are you sure you want to delete this group? This action cannot be undone.")) 
+      return;
+     try{
+         await AxiosInstance.delete(`groups/${id}`);
+         setMessageType('success');
+         setMessage("Group Deleted successfully!");
+         fetchData(); 
+        }catch(err){
+          setMessage(err.response.data);
+          setMessageType('error');
+          
+    
+        }
+    
   };
 
   const goTo = (n) => setPageNumber(Math.max(0, Math.min(n, totalPages - 1)));
@@ -103,6 +139,15 @@ const allAuth = Array.from(
 
   return (
     <div className="p-6 space-y-6">
+
+       {message && (
+        <div className={` border px-4 py-2 rounded
+        ${messageType==='error' ? ' bg-red-100 border-red-400 text-red-700':' bg-green-100 border-green-400 text-green-700'  }
+        `}>
+          {message}
+        </div>
+      )
+    }
       {/* header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold">Groups List</h3>

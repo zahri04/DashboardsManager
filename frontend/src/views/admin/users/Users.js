@@ -33,6 +33,10 @@ export default function UsersList() {
   const [updatedAfter, setUpdatedAfter] = useState("");
   const [updatedBefore, setUpdatedBefore] = useState("");
 
+  // messages error and success
+  const [messageType, setMessageType] = useState("");
+  const [message,setMessage]=useState("")
+
   // helper to ISO
   const toFullISOString = (lv) => {
     const d = new Date(lv);
@@ -65,12 +69,15 @@ export default function UsersList() {
       const res = await AxiosInstance.get("users", { params: buildParams() });
       setUsers(res.data.content);
       setTotalPages(res.data.totalPages || 1);
+
     } catch (e) { console.error(e); }
   };
 
   useEffect(() => {
     fetchGroups();
     fetchUsers();
+      setMessage('');
+      setMessageType('');
   }, [
     pageNumber,
     username,
@@ -84,11 +91,50 @@ export default function UsersList() {
   ]);
 
   // actions
-  const handleAdd = async (u) => { await AxiosInstance.post("users", u); fetchUsers(); };
-  const handleEdit = async (u) => { await AxiosInstance.put(`users/${u.id}`, u); fetchUsers(); };
+  const handleAdd = async (u) => { 
+    try{
+     await AxiosInstance.post("users", u); 
+     
+     setMessageType('success');
+     setMessage("User added successfully!");
+     fetchUsers(); 
+    }catch(err){
+      setMessage(err.response.data);
+      setMessageType('error');
+      
+
+    }
+    
+  };
+  const handleEdit = async (u) => {
+   
+     try{
+     
+      await AxiosInstance.put(`users/${u.id}`, u);
+     setMessageType('success');
+     setMessage("User Updated successfully!");
+     fetchUsers(); 
+    }catch(err){
+      setMessage(err.response.data);
+      setMessageType('error');
+      
+
+    }
+    };
   const handleDelete = async (id) => {
-    await AxiosInstance.delete(`users/${id}`);
-    fetchUsers();
+    if(!window.confirm("are you sure to delete this user")) return ;
+   
+    try{
+      await AxiosInstance.delete(`users/${id}`);
+     setMessageType('success');
+     setMessage("User Deleted successfully!");
+     fetchUsers(); 
+    }catch(err){
+      setMessage(err.response.data);
+      setMessageType('error');
+      
+
+    }
   };
   const toggleStatus = (id) => setUsers((us) =>
     us.map((u) => u.id === id ? { ...u, enabled: !u.enabled } : u)
@@ -99,6 +145,16 @@ export default function UsersList() {
 
   return (
     <div className="p-6 space-y-6">
+
+           {message && (
+        <div className={` border px-4 py-2 rounded
+        ${messageType==='error' ? ' bg-red-100 border-red-400 text-red-700':' bg-green-100 border-green-400 text-green-700'  }
+        `}>
+          {message}
+        </div>
+      )
+    }
+
       {/* header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold">Users List</h3>

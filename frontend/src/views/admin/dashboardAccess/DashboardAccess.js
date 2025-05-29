@@ -34,6 +34,9 @@ export default function DashboardAccess() {
 
   // Delete an access entry
   const handleDelete = async (dashboardId, groupId) => {
+    if (!window.confirm("Are you sure you want to delete this access entry?")) {
+      return;
+    }
     try {
       await AxiosInstance.delete(`/dashboardAccess/${groupId}/${dashboardId}`);
       setAccessList(list =>

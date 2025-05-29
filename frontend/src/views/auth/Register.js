@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Redirect, Link } from "react-router-dom";
 import axios from "../../Axios";
 import dashboard from "../../assets/img/dashboard.jpg";
 import { useAuth } from "../../context/AuthContext";
+import AxiosInstance from "../../Axios";
 
 export default function Register() {
   const { token, user } = useAuth();
+  const [groups,setGroups] = useState([]);
   const [formData, setFormData] = useState({
     username: "",
     fullName: "",
@@ -15,10 +17,31 @@ export default function Register() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
+  
+ const fetchGroups=async ()=>{
+    try{
+      const response=await AxiosInstance.get("public/groups");
+      setGroups(Array.isArray(response.data) ? response.data : []);
+
+    }catch(err){
+      console.error("Error fetching groups:", err);
+      setMessage("Failed to load groups.");
+      setMessageType("error");
+    }
+
+
+  
+  }
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
   if (token && user) {
     return <Redirect to="/admin/dashboard" />;
   }
 
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "groupNames") {
@@ -41,6 +64,7 @@ export default function Register() {
       setMessageType("error");
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -120,9 +144,11 @@ export default function Register() {
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             >
-              <option value="MARKETING">MARKETING</option>
-              <option value="FINANCE">FINANCE</option>
-              <option value="ASSISTANT">ASSISTANT</option>
+              {Array.isArray(groups) && groups.map((group,key) => (
+                <option key={key} value={group.groupName}>
+                  {group.groupName}
+                </option>
+              ))}
             </select>
           </div>
 
