@@ -31,6 +31,19 @@ public interface UserRepo extends JpaRepository<User,Long> {
 
 
 
+        @Query("""
+    select distinct u
+      from User u
+      left join fetch u.groups g
+      left join fetch g.dashboardAccesses da
+      left join fetch da.dashboard dash
+     where u.username = :username
+  """)
+        Optional<User> findUserByUsernameWithAccesses(@Param("username") String username);
+
+
+
+
     // advanced Search with multiple properties
 
     @Query(

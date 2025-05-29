@@ -23,6 +23,7 @@ public interface DashboardRepo extends JpaRepository<Dashboard,Long> {
                     "(:description IS Null OR d.description LIKE %:description% )AND "+
                     "(:base_url IS Null OR d.base_url LIKE %:base_url% )AND "+
                     "(:secret_key IS Null OR d.secret_key LIKE %:secret_key% )AND "+
+                    "(:resourceValue IS Null OR d.resourceValue=:resourceValue )AND "+
                     "(:createdAfter IS Null OR :createdAfter <= d.createdAt )AND "+
                     "(:createdBefore IS Null OR :createdBefore >= d.createdAt  )AND"+
                     "(:updatedAfter IS Null OR :updatedAfter <= d.updatedAt  )AND"+
@@ -37,6 +38,7 @@ public interface DashboardRepo extends JpaRepository<Dashboard,Long> {
             @Param("description") String description,
             @Param("base_url") String baseUrl,
             @Param("secret_key") String secret_key,
+            @Param("resourceValue")  Long resourceValue,
             @Param("createdAfter") LocalDateTime createdAfter,
             @Param("createdBefore") LocalDateTime createdBefore,
             @Param("updatedAfter") LocalDateTime updatedAfter,

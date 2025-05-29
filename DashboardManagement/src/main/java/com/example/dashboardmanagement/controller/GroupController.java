@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+@PreAuthorize("hasAnyAuthority('PERM_GROUP_MANAGEMENT','PERM_DASHBOARD_MANAGEMENT')")
 @Validated
 @RestController
+
 @RequestMapping("/api/groups")
-@PreAuthorize("hasAuthority('PERM_GROUP_MANAGEMENT')")
+
 public class GroupController {
 
     @Autowired
@@ -29,7 +31,7 @@ public class GroupController {
     private GroupStatsService groupStatsService;
 
     // Get all groups
-    @GetMapping
+    @GetMapping("all")
     public List<GroupDto> getAllGroups() {
         return groupService.getAllGroups();
     }
@@ -59,7 +61,7 @@ public class GroupController {
     }
 
 
-    @GetMapping("search")
+    @GetMapping()
 
     public Page<GroupDto> searchGroups(
             @RequestParam(required = false) String name,

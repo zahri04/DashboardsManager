@@ -33,6 +33,10 @@ public class UserPrincipal implements UserDetails {
         return authorities;
     }
 
+    public List<Group> getGroups(){
+        return user.getGroups().stream().collect(Collectors.toList());
+    }
+
     @Override
     public String getPassword() {
         return user.getPassword();

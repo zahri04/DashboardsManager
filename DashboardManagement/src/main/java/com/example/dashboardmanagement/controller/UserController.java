@@ -37,7 +37,7 @@ public class UserController {
 
 
     // Get all users
-    @GetMapping
+    @GetMapping("all")
     public List<UserDto> getAllUsers() {
 
         List<UserDto> users=userService.getAllUsers();
@@ -45,7 +45,7 @@ public class UserController {
     }
 
     // search for users
-    @GetMapping("search")
+    @GetMapping()
 
     public Page<UserDto> searchUsers(
             @RequestParam(required = false) String username,
@@ -64,7 +64,7 @@ public class UserController {
 
             ){
 
-        Page<UserDto> users= userService.searchUsers(username,fullName,enabled,createdAfter,createdBefore,updatedAfter,updatedBefore,groupNames,pageNumber,pageSize,
+        Page<UserDto> users= userService.getUsers(username,fullName,enabled,createdAfter,createdBefore,updatedAfter,updatedBefore,groupNames,pageNumber,pageSize,
                 sort ==null ? List.of("username,asc"):sort
 
         );
