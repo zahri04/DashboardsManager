@@ -32,6 +32,10 @@ export default function DashboardsList() {
   const [updatedAfter, setUpdatedAfter] = useState("");
   const [updatedBefore, setUpdatedBefore] = useState("");
 
+    // messages error and success
+    const [messageType, setMessageType] = useState("");
+    const [message,setMessage]=useState("")
+
   const history = useHistory();
 
   const toISO = (v) => {
@@ -84,18 +88,52 @@ export default function DashboardsList() {
 
   // actions
   const handleAdd = async (d) => {
-    await AxiosInstance.post("/dashboard", d);
+   
+      try{
+         await AxiosInstance.post("/dashboard", d);
+         setMessageType('success');
+         setMessage("Dashboard Added successfully!");
+         fetchDashboards();
+        }catch(err){
+          setMessage(err.response.data);
+          setMessageType('error');
+          
+    
+        }
     setAddOpen(false);
-      fetchDashboards();
+     
   };
   const handleEdit = async (d) => {
-    await AxiosInstance.put(`/dashboard/${d.id}`, d);
+   
+    try{
+         await AxiosInstance.put(`/dashboard/${d.id}`, d);
+         setMessageType('success');
+         setMessage("Dashboard Updated successfully!");
+         fetchDashboards();
+        }catch(err){
+          setMessage(err.response.data);
+          setMessageType('error');
+          
+    
+        }
     setEditOpen(false);
 
   };
   const handleDelete = async (id) => {
-    await AxiosInstance.delete(`/dashboard/${id}`);
-    fetchDashboards();
+    
+    try{
+          if (!window.confirm("Are you sure you want to delete this dashboard?")) return;
+         await AxiosInstance.delete(`/dashboard/${id}`);
+         setMessageType('success');
+         setMessage("Dashboard Deleted successfully!");
+         fetchDashboards();
+        }catch(err){
+          setMessage(err.response.data);
+          setMessageType('error');
+          
+    
+        }
+    
 
   };
   const handleView = (id) => history.push(`/admin/dashboardView/${id}`);
@@ -104,6 +142,15 @@ export default function DashboardsList() {
 
   return (
     <div className="p-6 space-y-6">
+          {message && (
+        <div className={` border px-4 py-2 rounded
+        ${messageType==='error' ? ' bg-red-100 border-red-400 text-red-700':' bg-green-100 border-green-400 text-green-700'  }
+        `}>
+          {message}
+        </div>
+      )
+    }
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold">Dashboards List</h3>
@@ -262,7 +309,6 @@ export default function DashboardsList() {
                 "Base URL",
                 "Secret Key",
                 "Dashboard ID",
-                "Created By",
                 "Created At",
                 "Actions",
               ].map((h) => (
@@ -295,7 +341,6 @@ export default function DashboardsList() {
                 </td>
                 <td className="px-6 py-4 text-sm">{d.secret_key.substr(0,10)}...</td>
                 <td className="px-6 py-4 text-sm">{d.resourceValue}</td>
-                <td className="px-6 py-4 text-sm">{d.created_by}</td>
                 <td className="px-6 py-4 text-sm">{d.created_at}</td>
                 <td className="px-6 py-4 text-sm space-x-2">
                   <button onClick={(e) => { e.stopPropagation(); handleView(d.id); }}>

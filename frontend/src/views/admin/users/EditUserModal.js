@@ -15,7 +15,6 @@ export default function EditUserModal({ isOpen, onClose, user, onUpdate }) {
       try {
         const response = await AxiosInstance.get("groups");
         setGroups(response.data.content.map(group => group.name)); // Assuming each group has a 'name' property
-      console.log("Groups fetched:", response.data); // Debugging line
       } catch (error) {
         console.error("Error fetching groups:", error);
       }

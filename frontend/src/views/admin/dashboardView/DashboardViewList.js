@@ -10,7 +10,6 @@ export default function DashboardViewList() {
   const fetchDashboards = async () => {
     try {
       const res = await AxiosInstance.get("/dashboardView");
-      console.log("Fetched dashboards:", res.data);
       setGroups(res.data || {});
     } catch (e) {
       console.error("Error fetching dashboards:", e);
