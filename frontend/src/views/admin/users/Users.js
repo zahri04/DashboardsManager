@@ -333,7 +333,7 @@ export default function UsersList() {
                     {u.enabled ? "Enabled" : "Disabled"}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm">{u.created_at}</td>
+                <td className="px-6 py-4 text-sm">{(u.created_at+"").substring(0,10)}</td>
                 <td className="px-6 py-4 text-sm space-x-2">
                   <button onClick={() => { setSelectedUser(u); setIsEditOpen(true); }}>
                     <FaEdit className="text-blue-600 hover:text-blue-800" />

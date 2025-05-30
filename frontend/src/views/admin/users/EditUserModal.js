@@ -4,7 +4,6 @@ import AxiosInstance from "../../../Axios";
 export default function EditUserModal({ isOpen, onClose, user, onUpdate }) {
   const [formData, setFormData] = useState({
     username: "",
-    password: "", // optional on update
     fullName: "",
     enabled: false,
     groupNames: [],
@@ -28,7 +27,6 @@ export default function EditUserModal({ isOpen, onClose, user, onUpdate }) {
     if (user) {
       setFormData({
         username: user.username || "",
-        password: "", // keep empty for security; optional
         fullName: user.fullName || "",
         enabled: user.enabled || false,
         groupNames: user.groupNames || [],
@@ -71,14 +69,6 @@ export default function EditUserModal({ isOpen, onClose, user, onUpdate }) {
             name="username"
             placeholder="Username"
             value={formData.username}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="New Password (leave empty to keep unchanged)"
-            value={formData.password}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
           />

@@ -305,7 +305,6 @@ export default function DashboardsList() {
             <tr>
               {[
                 "Name",
-                "Description",
                 "Base URL",
                 "Secret Key",
                 "Dashboard ID",
@@ -329,7 +328,6 @@ export default function DashboardsList() {
                 onClick={() => setDetailOpen(true) || setSelected(d)}
               >
                 <td className="px-6 py-4 text-sm">{d.name}</td>
-                <td className="px-6 py-4 text-sm">{d.description}</td>
                 <td className="px-6 py-4 text-sm">
                   <a
                     href={d.base_url}
@@ -341,7 +339,7 @@ export default function DashboardsList() {
                 </td>
                 <td className="px-6 py-4 text-sm">{d.secret_key.substr(0,10)}...</td>
                 <td className="px-6 py-4 text-sm">{d.resourceValue}</td>
-                <td className="px-6 py-4 text-sm">{d.created_at}</td>
+                <td className="px-6 py-4 text-sm">{(d.created_at+"").substring(0,10)}</td>
                 <td className="px-6 py-4 text-sm space-x-2">
                   <button onClick={(e) => { e.stopPropagation(); handleView(d.id); }}>
                     View

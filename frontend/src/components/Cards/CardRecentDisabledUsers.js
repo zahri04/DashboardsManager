@@ -1,10 +1,12 @@
 import React from "react";
 import AxiosInstance from "Axios.js";
+import { Redirect, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 // components
 
 export default function CardRecentDisabledUsers() {
 
   const [recentUsers, setRecentUsers] = React.useState([]);
+  const history = useHistory();
 
   React.useEffect(() => {
     if (recentUsers.length > 0) return;
@@ -38,7 +40,7 @@ export default function CardRecentDisabledUsers() {
                 className="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
                 onClick={() => {
-                  window.location.href = "/admin/users";
+                  history.push("/admin/users") // Redirect to users page
                 }}
               >
                 See all

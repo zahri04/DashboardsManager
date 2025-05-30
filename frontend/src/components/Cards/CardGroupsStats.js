@@ -1,11 +1,13 @@
 import React from "react";
 import AxiosInstance from "Axios.js";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 // components
 
 export default function CardGroupsStats() {
 
   const [groupsStats, setGroupsStats] = React.useState([]);
+  const history=useHistory();
 React.useEffect(() => {
   if(groupsStats.length > 0) return;
 
@@ -40,7 +42,7 @@ React.useEffect(() => {
                 className="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
                 onClick={() => {
-                  window.location.href = "/admin/groups";
+                  history.push("/admin/groups") // Redirect to groups page;
                 }}
               >
                 See all
