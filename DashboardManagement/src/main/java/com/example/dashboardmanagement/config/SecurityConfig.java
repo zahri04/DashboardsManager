@@ -53,7 +53,7 @@ public class SecurityConfig  {
                 .and().
                 csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request->request
-                        .requestMatchers("/api/register","/api/login")
+                        .requestMatchers("/api/register","/api/login","/api/public/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
