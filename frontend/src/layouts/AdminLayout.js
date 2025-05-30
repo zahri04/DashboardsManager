@@ -15,7 +15,7 @@ export default function AdminLayout({ children }) {
       {/* Navbar + Content */}
       <div
         className={`
-          flex flex-col flex-1 transition-all duration-300 ease-in-out
+          flex flex-col flex-1 min-h-screen transition-all duration-300 ease-in-out
           ${collapsed ? "ml-0" : "ml-64"}
         `}
       >
@@ -29,7 +29,7 @@ export default function AdminLayout({ children }) {
         <div className="h-16" />
 
         {/* Main content */}
-        <main className="flex-1 p-6 overflow-y-auto bg-gray-50">
+        <main className="flex-1 flex flex-col p-6 overflow-y-auto bg-gray-50">
           {children}
         </main>
 

@@ -44,8 +44,8 @@ const DashboardView = () => {
         <iframe
           title="Metabase Dashboard"
           src={iframeUrl}
-
-          height="600px"
+          height="1000px"
+          width="100%"
           allowTransparency="true"
           frameBorder="0"
         />
